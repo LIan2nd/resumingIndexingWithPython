@@ -12,7 +12,7 @@
 
     <h1>Upload File</h1>
     <form action="/upload" method="post" enctype="multipart/form-data">
-        <input type="file" name="file" accept=".pdf, .txt, .csv">
+        <input type="file" name="file" accept=".pdf, .txt, .docx">
         <button type="submit">Upload</button>
     </form>
 
@@ -25,6 +25,10 @@
         <div style="text-align: right">
             <a href="/" style="width: 10px; height: 5px; border: 1px solid black; background-color: #e7e7e7; color: black; padding: 3px 10px; border-radius: 2px; text-decoration: none;">Reset</a>
         </div>
+    </div>
+    {% elif error %}
+    <div style="width: 50%; text-align: justify">
+        <p>{{ error }}</p>
     </div>
     {% else %}
     <div style="width: 50%; text-align: justify">

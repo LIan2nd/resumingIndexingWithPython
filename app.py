@@ -4,6 +4,8 @@ from flask import request
 from flask import jsonify  
 import pdfplumber
 import nltk
+import docx
+# import magic
 
 # nltk.download('punkt')
 # nltk.download('stopwords')
@@ -23,13 +25,10 @@ def landing_page():
     summary_list = []
     return render_template('index.html', summary_list=summary_list)
 
-# Text to Summary
-def extract_text_from_pdf(pdf_path):
-    with pdfplumber.open(pdf_path) as pdf:
-        text = ""
-        for page in pdf.pages:
-            text += page.extract_text()
-    return text
+# def get_file_type(file_path):
+#   mime = magic.Magic()
+#   mime_type = mime.from_file(file_path)
+#   return mime_type.lower()
 
 # Extract pdf to Text
 def extract_text_from_pdf(pdf_path):
@@ -38,17 +37,42 @@ def extract_text_from_pdf(pdf_path):
         for page in pdf.pages:
             text += page.extract_text()
     return text
-# End Extract pdf to Text
+# End Extract pdf to text
+
+# Extract docx to Text
+def extract_text_from_docx(file_path):
+    doc = docx.Document(file_path)
+    text = ""
+    for para in doc.paragraphs:
+        text += para.text + '\n'
+    return text
+# End Extract docx to text
+
+# Mendapatkan ekstensi file
+def get_file_extension(file_name):
+    return file_name.rsplit('.', 1)[-1].lower()
+# End mendapatkan ekstensi file
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
     file = request.files['file']
+    file_extension = get_file_extension(file.filename)
     file.save('uploads/' + file.filename)
-    pdf_path = 'uploads/' + file.filename
+    file_path = 'uploads/' + file.filename
+    # file_type = get_file_type(file_path)
 
     try:
-        text = extract_text_from_pdf(pdf_path)
-
+        if file_extension == 'pdf':
+            text = extract_text_from_pdf(file_path)
+        elif file_extension == 'docx':
+            text = extract_text_from_docx(file_path)
+        elif file_extension == 'txt':
+            with open(file_path, 'r') as txt_file:
+                text = txt_file.read()
+        else : 
+            error = "Unsupported file type. Please upload file pdf, txt or docx type"
+            return render_template('index.html', error = error)
+        
         def _create_frequency_table(text_string) -> dict:
           stopWords = set(stopwords.words("english"))
           words = word_tokenize(text_string)
