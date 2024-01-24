@@ -5,12 +5,6 @@ from flask import jsonify
 import pdfplumber
 import nltk
 import docx
-# import magic
-
-# nltk.download('punkt')
-# nltk.download('stopwords')
-# nltk.download('averaged_perceptron_tagger')
-# nltk.download('tagsets')
 
 from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk.corpus import stopwords
@@ -24,11 +18,6 @@ app = Flask(__name__)
 def landing_page():
     summary_list = []
     return render_template('index.html', summary_list=summary_list)
-
-# def get_file_type(file_path):
-#   mime = magic.Magic()
-#   mime_type = mime.from_file(file_path)
-#   return mime_type.lower()
 
 # Extract pdf to Text
 def extract_text_from_pdf(pdf_path):
